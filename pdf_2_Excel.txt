@@ -1,0 +1,29 @@
+Sub ExportPDFToExcel()
+    Dim acrobatApp As Object
+    Dim pdfDoc As Object
+    Dim pdfFilePath As String
+    Dim excelFilePath As String
+
+    ' Set the file paths
+    pdfFilePath = "C:\path\to\input.pdf"
+    excelFilePath = "C:\path\to\output.xlsx"
+
+    ' Create an instance of Adobe Acrobat
+    Set acrobatApp = CreateObject("AcroExch.App")
+
+    ' Open the PDF file
+    Set pdfDoc = acrobatApp.GetActiveDoc
+    pdfDoc.Open pdfFilePath
+
+    ' Save the PDF as Excel
+    pdfDoc.ExportAsFDF acXFDF, excelFilePath, "Excel Worksheet", 0, 0, 0, 0
+
+    ' Close the PDF file
+    pdfDoc.Close
+
+    ' Clean up
+    Set pdfDoc = Nothing
+    Set acrobatApp = Nothing
+
+    MsgBox "PDF exported to Excel successfully!"
+End Sub
