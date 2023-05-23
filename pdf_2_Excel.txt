@@ -1,29 +1,53 @@
 Sub ExportPDFToExcel()
-    Dim acrobatApp As Object
-    Dim pdfDoc As Object
-    Dim pdfFilePath As String
-    Dim excelFilePath As String
-
-    ' Set the file paths
-    pdfFilePath = "C:\path\to\input.pdf"
-    excelFilePath = "C:\path\to\output.xlsx"
-
-    ' Create an instance of Adobe Acrobat
-    Set acrobatApp = CreateObject("AcroExch.App")
-
+    Dim AcroApp As Object
+    Dim PDDoc As Object
+    Dim JSO As Object
+    Dim OutputFileName As String
+    Dim ExcelApp As Object
+    Dim ExcelWorkbook As Object
+    
+    ' Define the path and filename of the PDF file to be exported
+    Dim PDFFilePath As String
+    PDFFilePath = "C:\path\to\input.pdf"
+    
+    ' Define the path and filename of the Excel file to be created
+    Dim ExcelFilePath As String
+    ExcelFilePath = "C:\path\to\output.xlsx"
+    
+    ' Create an instance of Adobe Acrobat application
+    Set AcroApp = CreateObject("AcroExch.App")
+    AcroApp.Show
+    
     ' Open the PDF file
-    Set pdfDoc = acrobatApp.GetActiveDoc
-    pdfDoc.Open pdfFilePath
-
-    ' Save the PDF as Excel
-    pdfDoc.ExportAsFDF acXFDF, excelFilePath, "Excel Worksheet", 0, 0, 0, 0
-
-    ' Close the PDF file
-    pdfDoc.Close
-
+    Set PDDoc = CreateObject("AcroExch.PDDoc")
+    PDDoc.Open PDFFilePath
+    
+    ' Obtain the JavaScript object
+    Set JSO = PDDoc.GetJSObject
+    
+    ' Define the output Excel file name
+    OutputFileName = "excel:" & ExcelFilePath
+    
+    ' Export the PDF content to Excel
+    JSO.SaveAs OutputFileName, "com.adobe.acrobat.xlsx"
+    
+    ' Close the PDF document
+    PDDoc.Close
+    
+    ' Quit Adobe Acrobat application
+    AcroApp.Exit
+    
+    ' Release the object references
+    Set JSO = Nothing
+    Set PDDoc = Nothing
+    Set AcroApp = Nothing
+    
+    ' Open the exported Excel file
+    Set ExcelApp = CreateObject("Excel.Application")
+    Set ExcelWorkbook = ExcelApp.Workbooks.Open(ExcelFilePath)
+    ExcelApp.Visible = True
+    
     ' Clean up
-    Set pdfDoc = Nothing
-    Set acrobatApp = Nothing
-
-    MsgBox "PDF exported to Excel successfully!"
+    Set ExcelWorkbook = Nothing
+    Set ExcelApp = Nothing
 End Sub
